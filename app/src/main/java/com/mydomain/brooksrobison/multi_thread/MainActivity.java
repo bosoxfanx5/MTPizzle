@@ -1,6 +1,7 @@
 package com.mydomain.brooksrobison.multi_thread;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.Scanner;
 
 import static com.mydomain.brooksrobison.multi_thread.R.id.progressBar;
@@ -25,23 +27,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pBar = (ProgressBar) findViewById(R.id.progressBar);
     }
+
+
+    private ProgressBar pBar;
 
     View mainView;
     ArrayList<String> list = new ArrayList();
     int progress = 0;
 
+    //Create Method
     public void clickButton1(View v) {
 
         mainView = v;
-        clickThread1.start();
-
+        try {
+            clickThread1.start();
+        } catch (IllegalThreadStateException ex){
+            ex.printStackTrace();
+        }
         ProgressBar pBar = (ProgressBar) findViewById(progressBar);
-        while(progress < 50) {
+        while (progress < 50) {
             pBar.setProgress(progress);
         }
+        try {
+            clickThread1.join();
+        } catch (InterruptedException ex)
+        {
+            ex.printStackTrace();
+        }
+        clickThread1.interrupt();
     }
 
+    //Create Thread
     Thread clickThread1 = new Thread() {
 
         public void run() {
@@ -63,17 +81,21 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     };
 
+    //Load Event
     public void clickButton2(View v) {
 
         mainView = v;
-        clickThread2.start();
 
+        try {
+            clickThread2.start();
+        } catch (IllegalThreadStateException ex) {
+            ex.printStackTrace();
+        }
         ProgressBar pBar = (ProgressBar) findViewById(progressBar);
-        while(progress < 100) {
+        while (progress < 100) {
             pBar.setProgress(progress);
         }
 
@@ -89,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         num.setAdapter(adapter);
     }
 
+    //Load Thread
     Thread clickThread2 = new Thread() {
 
         public void run() {
@@ -117,24 +140,26 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
         }
 
     };
 
+    //Clear Event
     public void clickButton3(View v) {
 
+        //Reset the list...
         ArrayList<String> list = new ArrayList();
-
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, list);
 
         adapter.clear();
 
         ListView num = (ListView) findViewById(R.id.numLV);
         num.setAdapter(adapter);
-    }
 
+        //Reset the progress bar...
+        ProgressBar pBar = (ProgressBar) findViewById(progressBar);
+        pBar.setProgress(0);
     }
+}
 
 
