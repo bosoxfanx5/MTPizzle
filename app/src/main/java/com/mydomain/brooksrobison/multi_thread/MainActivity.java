@@ -3,6 +3,8 @@ package com.mydomain.brooksrobison.multi_thread;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -17,46 +19,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.IllegalFormatCodePointException;
 import java.util.Scanner;
+import java.util.logging.LogRecord;
 
 import static com.mydomain.brooksrobison.multi_thread.R.id.progressBar;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private Handler handler;
+    private ProgressBar progressBar;
+    int progress = 0;
+
+    View mainView;
+    ArrayList<String> list = new ArrayList();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        handler = new Handler();
     }
-
-
-    private ProgressBar pBar;
-
-    View mainView;
-    ArrayList<String> list = new ArrayList();
-    int progress = 0;
 
     //Create Method
     public void clickButton1(View v) {
 
         mainView = v;
-        try {
-            clickThread1.start();
-        } catch (IllegalThreadStateException ex){
-            ex.printStackTrace();
-        }
-        ProgressBar pBar = (ProgressBar) findViewById(progressBar);
-        while (progress < 50) {
-            pBar.setProgress(progress);
-        }
-        try {
-            clickThread1.join();
-        } catch (InterruptedException ex)
-        {
-            ex.printStackTrace();
-        }
-        clickThread1.interrupt();
+        try { clickThread1.start(); } catch (IllegalThreadStateException ex) { ex.printStackTrace(); }
     }
 
     //Create Thread
@@ -76,8 +66,14 @@ public class MainActivity extends AppCompatActivity {
                     outStream.write(i.toString().concat("\n").getBytes());
                     Thread.sleep(250);
                     progress += 5;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progress);
+                        }
+                    });
                 }
-                outStream.close();
+                    outStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -89,21 +85,8 @@ public class MainActivity extends AppCompatActivity {
 
         mainView = v;
 
-        try {
-            clickThread2.start();
-        } catch (IllegalThreadStateException ex) {
-            ex.printStackTrace();
-        }
-        ProgressBar pBar = (ProgressBar) findViewById(progressBar);
-        while (progress < 100) {
-            pBar.setProgress(progress);
-        }
-
-        try {
-            clickThread2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        try { clickThread2.start(); } catch (IllegalThreadStateException ex) { ex.printStackTrace(); }
+        try { clickThread2.join();  } catch (InterruptedException e) { e.printStackTrace(); }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, list);
 
@@ -129,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
                     list.add(scanner.nextLine());
                     Thread.sleep(250);
                     progress += 5;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progress);
+                        }
+                    });
                 }
                 inStream.close();
             } catch (FileNotFoundException e) {
@@ -138,10 +127,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
-
-
         }
-
     };
 
     //Clear Event
@@ -157,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
         num.setAdapter(adapter);
 
         //Reset the progress bar...
-        ProgressBar pBar = (ProgressBar) findViewById(progressBar);
-        pBar.setProgress(0);
+        //ProgressBar pBar = (ProgressBar) findViewById(progressBar);
+        progressBar.setProgress(0);
     }
 }
 
