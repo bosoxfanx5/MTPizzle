@@ -1,5 +1,5 @@
 /***************************************************
- * Assignment: 06.1 Threads (Android)
+ * Assignment: 06 Prove : Multi-threaded Programming
  *
  * Authors: Dan McDaniel and Brooks Robison
  *
