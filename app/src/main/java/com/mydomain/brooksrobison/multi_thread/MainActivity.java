@@ -1,3 +1,12 @@
+/***************************************************
+ * Assignment: 06.1 Threads (Android)
+ *
+ * Authors: Dan McDaniel and Brooks Robison
+ *
+ * Summary: This program will use threads to write to a file, load data
+ * from a file, and update a list while monitoring profess on a ProgressBar.
+ **************************************************/
+
 package com.mydomain.brooksrobison.multi_thread;
 
 import android.content.Context;
@@ -110,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //Clear Event
+    //Clear Method
     public void clickButton3(View v) {
         mainView = v;
 
