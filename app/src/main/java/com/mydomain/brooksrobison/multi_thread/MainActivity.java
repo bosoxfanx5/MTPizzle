@@ -1,3 +1,5 @@
+//This is Dan's first comment.
+
 /***************************************************
  * Assignment: 06 Prove : Multi-threaded Programming
  *
